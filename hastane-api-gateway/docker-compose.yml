@@ -1,0 +1,55 @@
+version: '3.8'
+
+networks:
+  hastane-net:
+
+services:
+  keycloak-mysql:
+    container_name: keycloak-mysql
+    image: mysql:8
+    volumes:
+      - ./volume-data/mysql_keycloak_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: keycloak
+      MYSQL_USER: keycloak
+      MYSQL_PASSWORD: password
+    networks:
+      - hastane-net
+
+  keycloak:
+    container_name: keycloak
+    image: quay.io/keycloak/keycloak:24.0.1
+    command: [ "start-dev", "--import-realm", "--hostname=keycloak", "--hostname-strict=false" ]
+    environment:
+      DB_VENDOR: MYSQL
+      DB_ADDR: mysql
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_PASSWORD: password
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - "8181:8080"
+    volumes:
+      - ./docker/keycloak/realms/:/opt/keycloak/data/import/
+    depends_on:
+      - keycloak-mysql
+    networks:
+      - hastane-net
+
+  api-gateway:
+    container_name: api-gateway
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: hastane-api-gateway:latest
+    ports:
+      - "9000:9000"
+    depends_on:
+      - keycloak
+    environment:
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/hastane-otomasyon
+      SPRING_PROFILES_ACTIVE: docker
+    networks:
+      - hastane-net
