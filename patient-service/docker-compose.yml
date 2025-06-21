@@ -1,0 +1,49 @@
+version: "3.8"
+
+services:
+  patient-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: patient-service
+    ports:
+      - "8082:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://patient-mysql:3306/patientdb  # 👈 HOSTNAME değişti
+      SPRING_DATASOURCE_USERNAME: patientuser
+      SPRING_DATASOURCE_PASSWORD: patientpass
+      SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      patient-mysql:
+        condition: service_healthy  # 👈 mysql -> patient-mysql
+    networks:
+      - hastane-net
+
+  patient-mysql:  # 👈 Artık benzersiz bir isim
+    image: mysql:8.3.0
+    container_name: patient-mysql
+    ports:
+      - "3308:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: mysql
+      MYSQL_DATABASE: patientdb
+      MYSQL_USER: patientuser
+      MYSQL_PASSWORD: patientpass
+      MYSQL_CHARACTER_SET_SERVER: utf8mb4
+      MYSQL_COLLATION_SERVER: utf8mb4_unicode_ci
+    volumes:
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./docker/mysql/data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - hastane-net
+
+networks:
+  hastane-net:
+    external: true
+    name: hastane-api-gateway_hastane-net

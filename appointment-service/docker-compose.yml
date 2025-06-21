@@ -1,0 +1,49 @@
+version: "3.8"
+
+services:
+  appointment-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: appointment-service
+    ports:
+      - "8083:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://appointment-mysql:3306/appointmentdb
+      SPRING_DATASOURCE_USERNAME: appointmentuser
+      SPRING_DATASOURCE_PASSWORD: appointmentpass
+      SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      appointment-mysql:
+        condition: service_healthy
+    networks:
+      - hastane-net
+
+  appointment-mysql:
+    image: mysql:8.3.0
+    container_name: appointment-mysql
+    ports:
+      - "3309:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: mysql
+      MYSQL_DATABASE: appointmentdb
+      MYSQL_USER: appointmentuser
+      MYSQL_PASSWORD: appointmentpass
+      MYSQL_CHARACTER_SET_SERVER: utf8mb4
+      MYSQL_COLLATION_SERVER: utf8mb4_unicode_ci
+    volumes:
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./docker/mysql/data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - hastane-net
+
+networks:
+  hastane-net:
+    external: true
+    name: hastane-api-gateway_hastane-net

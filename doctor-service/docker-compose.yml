@@ -1,0 +1,50 @@
+version: "3.8"
+
+services:
+  doctor-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: doctor-service
+    ports:
+      - "8084:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://doctor-mysql:3306/doctordb
+      SPRING_DATASOURCE_USERNAME: doctoruser
+      SPRING_DATASOURCE_PASSWORD: doctorpass
+      SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/hastane-otomasyon
+    depends_on:
+      doctor-mysql:
+        condition: service_healthy
+    networks:
+      - hastane-net
+
+  doctor-mysql:
+    image: mysql:8.3.0
+    container_name: doctor-mysql
+    ports:
+      - "3310:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: mysql
+      MYSQL_DATABASE: doctordb
+      MYSQL_USER: doctoruser
+      MYSQL_PASSWORD: doctorpass
+      MYSQL_CHARACTER_SET_SERVER: utf8mb4
+      MYSQL_COLLATION_SERVER: utf8mb4_unicode_ci
+    volumes:
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./docker/mysql/data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - hastane-net
+
+networks:
+  hastane-net:
+    external: true
+    name: hastane-api-gateway_hastane-net

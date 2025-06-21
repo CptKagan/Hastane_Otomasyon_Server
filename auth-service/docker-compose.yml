@@ -1,0 +1,16 @@
+version: '3.8'
+
+networks:
+  hastane-net:
+    external: true
+    name: hastane-api-gateway_hastane-net
+
+services:
+  auth-service:
+    container_name: auth-service
+    build:
+      context: .
+    ports:
+      - "8081:8080"
+    networks:
+      - hastane-net
