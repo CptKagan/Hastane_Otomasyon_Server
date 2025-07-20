@@ -15,6 +15,7 @@ public record RandevuResponseHastaId(
         String randevuDurum,
         String publicNote,
         String privateNote,
-        List<Long> testRequestIds
+        List<Long> testRequestIds,
+        String teshisVeRecete
 ) {
 }

@@ -9,7 +9,8 @@ public record TestResponse(
         String doktorId,
         Long hastaId,
         Long testId,
-        TestType testAdi,
-        LocalDateTime tercihEdilenTarih
+        String testAdi,
+        LocalDateTime tercihEdilenTarih,
+        String durum
 ) {
 }

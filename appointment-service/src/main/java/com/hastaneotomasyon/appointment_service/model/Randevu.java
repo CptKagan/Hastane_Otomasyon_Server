@@ -45,6 +45,9 @@ public class Randevu {
     @Column(columnDefinition = "TEXT", length = 1500)
     private String privateNote = "";
 
+    @Column(columnDefinition = "TEXT", length = 1500)
+    private String teshisVeRecete;
+
     public Randevu(RandevuRequest randevuRequest){
         this.tercihEdilenTarih = randevuRequest.tercihEdilenTarih();
         this.hastaId = randevuRequest.hastaId();

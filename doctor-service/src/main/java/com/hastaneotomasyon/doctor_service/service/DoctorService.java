@@ -187,4 +187,14 @@ public class DoctorService {
                 isimSoyisim
         );
     }
+
+    public RandevuResponseHastaIsimSoyisim randevuTeshisVeReceteEkleme(Jwt jwt, Long randevuId, RandevuTeshis randevuTeshis) {
+        RandevuResponseHastaId randevuResponseHastaId = appointmentClient.randevuTeshisVeReceteEkleme(jwt.getSubject(), randevuId, randevuTeshis);
+        String isimSoyisim = patientClient.hastaIsimSoyisimAl(randevuResponseHastaId.hastaId());
+        String bearerToken = "Bearer " + jwt.getTokenValue();
+        List<TestSonucuResponse> testSonucuResponses = labClient.doktorTestSonucuGoruntule(bearerToken, randevuId);
+        return new RandevuResponseHastaIsimSoyisim(randevuResponseHastaId,
+                testSonucuResponses,
+                isimSoyisim);
+    }
 }

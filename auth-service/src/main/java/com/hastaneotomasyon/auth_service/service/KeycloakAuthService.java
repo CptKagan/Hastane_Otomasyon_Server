@@ -2,12 +2,15 @@ package com.hastaneotomasyon.auth_service.service;
 
 import com.hastaneotomasyon.auth_service.config.KeycloakConfigProperties;
 import com.hastaneotomasyon.auth_service.dto.LoginRequest;
+import com.hastaneotomasyon.auth_service.dto.RefreshTokenRequest;
 import com.hastaneotomasyon.auth_service.dto.TokenResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.http.HttpHeaders;
@@ -75,5 +78,29 @@ public class KeycloakAuthService {
                 .body(form)
                 .retrieve()
                 .body(Void.class);
+    }
+
+    public TokenResponse refreshAccessToken(RefreshTokenRequest refreshTokenRequest) {
+        String tokenUrl = UriComponentsBuilder.fromUriString(keycloakConfigProperties.getAuthServerUrl())
+                .pathSegment("realms", keycloakConfigProperties.getRealm(), "protocol", "openid-connect", "token")
+                .toUriString();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+        body.add("grant_type", "refresh_token");
+        body.add("refresh_token", refreshTokenRequest.refreshToken());
+        body.add("client_id", keycloakConfigProperties.getClientId());
+        body.add("client_secret", keycloakConfigProperties.getClientSecret());
+
+
+
+        return restClient.post()
+                .uri(tokenUrl)
+                .headers(httpHeaders -> httpHeaders.addAll(headers))
+                .body(body)
+                .retrieve()
+                .body(TokenResponse.class);
     }
 }

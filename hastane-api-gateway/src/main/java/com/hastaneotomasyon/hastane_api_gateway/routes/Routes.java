@@ -8,6 +8,7 @@ import org.springframework.web.servlet.function.RouterFunction;
 import org.springframework.web.servlet.function.ServerResponse;
 import org.springframework.web.servlet.function.RequestPredicates;
 
+import static org.springframework.cloud.gateway.server.mvc.filter.FilterFunctions.setPath;
 import static org.springframework.cloud.gateway.server.mvc.handler.GatewayRouterFunctions.route;
 
 @Configuration
@@ -17,6 +18,15 @@ public class Routes {
     public RouterFunction<ServerResponse> authServiceLoginRoute() {
         return route("auth_service")
                 .route(RequestPredicates.path("/api/auth/login"), HandlerFunctions.http())
+                // Apply a "before" filter that rewrites the target URI
+                .before(BeforeFilterFunctions.uri("http://auth-service:8080"))
+                .build();
+    }
+
+    @Bean
+    public RouterFunction<ServerResponse> authServiceRefreshToken() {
+        return route("auth_service")
+                .route(RequestPredicates.path("/api/auth/refresh"), HandlerFunctions.http())
                 // Apply a "before" filter that rewrites the target URI
                 .before(BeforeFilterFunctions.uri("http://auth-service:8080"))
                 .build();
@@ -62,6 +72,7 @@ public class Routes {
                 .build();
     }
 
+    // FRONT EKLENMEDİ
     @Bean
     public RouterFunction<ServerResponse> doctorServiceRandevuGoruntuleKod(){
         return route("doctor-service")
@@ -119,7 +130,15 @@ public class Routes {
     }
 
     @Bean
-    public RouterFunction<ServerResponse> labServiceAuthDeneme(){
+    public RouterFunction<ServerResponse> doctorServiceRandevuyaTeshisVeSonucEkleme(){
+        return route("doctor-service")
+                .route(RequestPredicates.path("/api/doktor/randevuteshisvereceteekleme/**"), HandlerFunctions.http())
+                .before(BeforeFilterFunctions.uri("http://doctor-service:8080"))
+                .build();
+    }
+
+    @Bean
+    public RouterFunction<ServerResponse> labServiceGunlukTestGoruntule(){
         return route("lab_service")
                 .route(RequestPredicates.path("/api/laboratuvar/gunluktestgoruntule"), HandlerFunctions.http())
                 .before(BeforeFilterFunctions.uri("http://lab-service:8080"))

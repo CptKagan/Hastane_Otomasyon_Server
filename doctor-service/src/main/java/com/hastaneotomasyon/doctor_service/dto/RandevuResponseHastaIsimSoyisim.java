@@ -15,7 +15,8 @@ public record RandevuResponseHastaIsimSoyisim(
         String publicNote,
         String privateNote,
         List<Long> testRequestIds,
-        List<TestSonucuResponse> testSonuclari
+        List<TestSonucuResponse> testSonuclari,
+        String teshisVeRecete
 ) {
     public RandevuResponseHastaIsimSoyisim(RandevuResponseHastaId randevuResponseHastaId, List<TestSonucuResponse> testSonucuResponses, String isimSoyisim){
         this(
@@ -27,7 +28,8 @@ public record RandevuResponseHastaIsimSoyisim(
                 randevuResponseHastaId.publicNote(),
                 randevuResponseHastaId.privateNote(),
                 randevuResponseHastaId.testRequestIds(),
-                testSonucuResponses
+                testSonucuResponses,
+                randevuResponseHastaId.teshisVeRecete()
         );
     }
 }

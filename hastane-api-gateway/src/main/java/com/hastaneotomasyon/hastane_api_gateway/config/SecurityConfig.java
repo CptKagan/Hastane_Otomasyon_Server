@@ -1,6 +1,7 @@
 package com.hastaneotomasyon.hastane_api_gateway.config;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -11,6 +12,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 public class SecurityConfig {
@@ -20,10 +24,15 @@ public class SecurityConfig {
     public SecurityFilterChain openLogin(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
+                .cors(cors ->cors.configurationSource(corsConfigurationSource()))
                 .securityMatcher(
                         "/api/auth/login", "/api/auth/logout",
                         "/api/hasta/randevual", "/api/hasta/hastagoruntule",
-                        "/api/hasta/randevugoruntule", "/api/hasta/randevuiptal"
+                        "/api/hasta/randevugoruntule", "/api/hasta/randevuiptal",
+                        "/api/auth/refresh", "/swagger-ui.html",
+                        "/swagger-ui/**", "/v3/api-docs/**",
+                        "/swagger-resources/**", "/api-docs/**",
+                        "/aggregate/**"
                 )
                 .authorizeHttpRequests(a -> a.anyRequest().permitAll())
                 .build();
@@ -52,6 +61,7 @@ public class SecurityConfig {
     ) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
+                .cors(cors ->cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/doktor/**").hasRole("doktor")
                         .requestMatchers("/api/laboratuvar/**").hasRole("lab")
@@ -62,5 +72,18 @@ public class SecurityConfig {
                 );
 
         return http.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource(){
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of("http://localhost:3000")); // sadece frontend portu
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 }

@@ -70,4 +70,9 @@ public class DoctorController {
     public ResponseEntity<RandevuResponseHastaIsimSoyisim> randevuTestEkleme(@AuthenticationPrincipal Jwt jwt, @PathVariable Long randevuId, @RequestBody TestRequest testRequest){
         return ResponseEntity.ok(doctorService.randevuTestEkleme(jwt, randevuId, testRequest));
     }
+
+    @PatchMapping("/randevuteshisvereceteekleme/{randevuId}")
+    public ResponseEntity<RandevuResponseHastaIsimSoyisim> randevuTeshisVeReveteEkleme(@AuthenticationPrincipal Jwt jwt, @PathVariable Long randevuId, @RequestBody RandevuTeshis randevuTeshis){
+        return ResponseEntity.ok(doctorService.randevuTeshisVeReceteEkleme(jwt, randevuId, randevuTeshis));
+    }
 }

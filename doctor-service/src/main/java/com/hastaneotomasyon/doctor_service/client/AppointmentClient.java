@@ -2,6 +2,7 @@ package com.hastaneotomasyon.doctor_service.client;
 
 import com.hastaneotomasyon.doctor_service.dto.NotRequest;
 import com.hastaneotomasyon.doctor_service.dto.RandevuResponseHastaId;
+import com.hastaneotomasyon.doctor_service.dto.RandevuTeshis;
 import com.hastaneotomasyon.doctor_service.dto.TestRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -37,4 +38,7 @@ public interface AppointmentClient {
 
     @PatchExchange("/api/randevu/randevutestekleme/{randevuId}")
     RandevuResponseHastaId randevuTestEkleme(@PathVariable Long randevuId, @RequestBody TestRequest testRequest, @RequestParam String doktorId);
+
+    @PatchExchange("/api/randevu/randevuteshisvereceteekleme/{randevuId}")
+    RandevuResponseHastaId randevuTeshisVeReceteEkleme(@RequestParam String doktorId, @PathVariable Long randevuId, @RequestBody RandevuTeshis randevuTeshis);
 }

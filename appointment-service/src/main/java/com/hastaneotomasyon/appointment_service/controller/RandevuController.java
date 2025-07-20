@@ -90,4 +90,9 @@ public class RandevuController {
     public void tumTestlerSonuclanmisMi(@RequestBody TumTestlerSonuclanmisMiRequest tumTestlerSonuclanmisMiRequest){
         randevuService.tumTestlerSonuclanmisMi(tumTestlerSonuclanmisMiRequest);
     }
+
+    @PatchMapping("/randevuteshisvereceteekleme/{randevuId}")
+    public ResponseEntity<DoktorRandevuResponse> randevuTeshisVeReceteEkleme(@RequestParam String doktorId, @PathVariable Long randevuId, @RequestBody RandevuTeshis randevuTeshis){
+        return ResponseEntity.ok(randevuService.randevuTeshisVeReceteEkleme(doktorId, randevuId, randevuTeshis));
+    }
 }

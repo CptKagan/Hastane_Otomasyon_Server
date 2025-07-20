@@ -2,6 +2,7 @@ package com.hastaneotomasyon.auth_service.controller;
 
 import com.hastaneotomasyon.auth_service.dto.LoginRequest;
 import com.hastaneotomasyon.auth_service.dto.LogoutRequest;
+import com.hastaneotomasyon.auth_service.dto.RefreshTokenRequest;
 import com.hastaneotomasyon.auth_service.dto.TokenResponse;
 import com.hastaneotomasyon.auth_service.service.KeycloakAuthService;
 import jakarta.validation.Valid;
@@ -25,5 +26,11 @@ public class AuthController {
     public ResponseEntity<Void> logout(@RequestBody LogoutRequest logoutRequest){
         keycloakAuthService.logout(logoutRequest.refreshToken());
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<TokenResponse> refreshAccessToken(@RequestBody RefreshTokenRequest refreshTokenRequest){
+        TokenResponse tokenResponse = keycloakAuthService.refreshAccessToken(refreshTokenRequest);
+        return ResponseEntity.ok(tokenResponse);
     }
 }

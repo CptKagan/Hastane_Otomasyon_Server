@@ -274,7 +274,28 @@ public class RandevuService {
                 }
             }
         }
-
         return testResponses;
+    }
+
+    public DoktorRandevuResponse randevuTeshisVeReceteEkleme(String doktorId, Long randevuId, RandevuTeshis randevuTeshis) {
+        Optional<Randevu> randevuOpt = randevuRepository.findById(randevuId);
+        if(randevuOpt.isEmpty()){
+            throw new NoSuchElementException("Randevu bulunamadı.");
+        }
+        Randevu randevu = randevuOpt.get();
+        if(!randevu.getDoktorId().equals(doktorId)){
+            throw new IllegalArgumentException("Bu randevuyu güncelleme yetkiniz bulunmamaktadır.");
+        }
+        switch (randevu.getRandevuDurum()){
+            case IPTAL, KAPANDI, TAHLIL_BEKLENIYOR, VAKTI_GELMEDI, SURUYOR:
+                throw new IllegalArgumentException("Bu randevuyu güncelleme yetkiniz bulunmamaktadır");
+            case TESHIS:
+                randevu.setTeshisVeRecete(randevuTeshis.teshisAndRecete());
+                randevu.setRandevuDurum(RandevuDurum.KAPANDI);
+                randevuRepository.save(randevu);
+                return new DoktorRandevuResponse(randevu);
+            default:
+                throw new IllegalStateException("Bilinmeyen randevu durumu");
+        }
     }
 }

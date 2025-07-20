@@ -14,7 +14,8 @@ public record DoktorRandevuResponse(
         String randevuDurum,
         String publicNote,
         String privateNote,
-        List<Long> testRequestIds
+        List<Long> testRequestIds,
+        String teshisVeRecete
 ) {
     public DoktorRandevuResponse(Randevu randevu){
         this(
@@ -26,7 +27,8 @@ public record DoktorRandevuResponse(
                 randevu.getRandevuDurum().toString(),
                 randevu.getPublicNote(),
                 randevu.getPrivateNote(),
-                randevu.getTestRequestIds()
+                randevu.getTestRequestIds(),
+                randevu.getTeshisVeRecete()
         );
     }
 }

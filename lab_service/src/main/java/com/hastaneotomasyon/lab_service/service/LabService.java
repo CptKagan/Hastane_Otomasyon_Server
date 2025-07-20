@@ -76,7 +76,22 @@ public class LabService {
         List<TestResponse> testResponsesGelen = appointmentClient.gunlukTestGoruntule(gunlukTestRequest);
         List<TestResponse> testResponseGidecek = new ArrayList<>();
         for (TestResponse testResponse : testResponsesGelen) {
-            TestResponse testResponseGidecekSingle = new TestResponse(testResponse.randevuId(), testResponse.doktorId(), testResponse.hastaId(), testResponse.testId(), TestType.fromId(testResponse.testId()), testResponse.tercihEdilenTarih());
+
+            String durum;
+
+            if(testResultRepository.findByRandevuIdAndTestId(testResponse.randevuId(), testResponse.testId()).isEmpty()){
+                durum = "BEKLIYOR";
+            } else{
+                durum = "ISLENDI";
+            }
+
+            TestResponse testResponseGidecekSingle = new TestResponse(testResponse.randevuId(),
+                    testResponse.doktorId(),
+                    testResponse.hastaId(),
+                    testResponse.testId(),
+                    TestType.fromId(testResponse.testId()).toString(),
+                    testResponse.tercihEdilenTarih(),
+                    durum);
             testResponseGidecek.add(testResponseGidecekSingle);
         }
         return testResponseGidecek;

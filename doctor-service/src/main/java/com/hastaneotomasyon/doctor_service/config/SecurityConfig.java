@@ -38,6 +38,10 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/doktor/fetchDoktorById/**").permitAll()
+                        .requestMatchers(
+                                "/swagger-ui.html", "/swagger-ui/**",
+                                "/v3/api-docs","/v3/api-docs/**"
+                        ).permitAll()
                         .requestMatchers("/api/doktor/**").hasRole("doktor")
                         .anyRequest().authenticated()
                 )

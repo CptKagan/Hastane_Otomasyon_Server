@@ -58,7 +58,7 @@ public class RestClientConfig {
         return httpServiceProxyFactory.createClient(PatientClient.class); // InventoryClient.class tipi için bir HTP proxy instance oluşturur. Bu, @GetExchange gibi anotasyonlara göre gerçek HTTP istekleri atan bir sınıf olur.
     }
 
-    private ClientHttpRequestFactory getClientRequestFactory(){
+    private ClientHttpRequestFactory getClientRequestFactory() {
         return ClientHttpRequestFactoryBuilder
                 .httpComponents()              // or .jdk(), .httpComponents(), .jetty(), .reactor()
                 .withCustomizer(factory -> {
